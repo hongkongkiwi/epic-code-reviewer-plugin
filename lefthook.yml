@@ -5,3 +5,7 @@ pre-commit:
       run: plugins/epic-code-reviewer/scripts/validate_plugin.sh
     diff-check:
       run: git diff --cached --check
+    shellcheck:
+      run: shellcheck plugins/epic-code-reviewer/scripts/*.sh
+    actionlint:
+      run: actionlint .github/workflows/*.yml

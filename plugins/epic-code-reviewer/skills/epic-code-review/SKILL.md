@@ -143,6 +143,49 @@ Start with high-impact paths:
 - Frontend SSR guards, accessibility, localization, API contract drift, form validation.
 - Performance problems with a concrete trigger, not vague taste.
 
+## Review Profiles
+
+When the user names a profile, keep the normal review rules and bias the read pass toward that risk. If the user does not name one, use `general`.
+
+- `general`: correctness, contracts, tests, security-adjacent mistakes, and release risk introduced by the diff.
+- `security`: auth, tenant boundaries, injection, secrets, SSRF, webhooks, crypto, deserialization, shell/file/URL handling, dependency risk, and auditability.
+- `correctness`: broken control flow, missing awaits, stale state, validation gaps, data-shape drift, error handling, migrations, compatibility, and test coverage for changed behavior.
+- `llm-safety`: prompts, RAG, memory, MCP tools, browser automation, tool-call permissions, indirect injection, output injection, provenance, and irreversible-action controls.
+- `release-readiness`: CI, packaging, versioning, migrations, deploy config, rollback behavior, feature flags, docs, and whether the release artifact matches the tag.
+
+## Language Packs
+
+Use these extra checks when the changed files match.
+
+### Shell
+
+- Require `set -euo pipefail` unless the script has a clear reason not to.
+- Quote variable expansions that become paths, patterns, or arguments.
+- Check pipelines, command substitution, traps, globbing, IFS, temp files, and cleanup.
+- Treat `eval`, `source`, shell hooks, PATH lookup, and `find -exec` as high risk.
+- Prefer arrays for argument construction.
+
+### GitHub Actions
+
+- Check event triggers, token permissions, fork behavior, cache keys, artifact paths, and secret exposure.
+- Treat `pull_request_target`, writable tokens, unpinned third-party actions, and shell interpolation of PR-controlled text as high risk.
+- Check that installed tools are added to `PATH` before later steps need them.
+- Make release checks prove tag, metadata, and artifact contents match.
+
+### TypeScript and Node
+
+- Check async paths for missing `await`, swallowed promises, stale closures, and uncaught rejections.
+- Check runtime validation at API boundaries; TypeScript types are not input validation.
+- Watch for auth checks moved to middleware without caller proof.
+- Check package scripts, lockfile changes, env parsing, ESM/CJS drift, SSR boundaries, and dependency updates.
+
+### Python
+
+- Check exception paths, context managers, subprocess use, path handling, dependency pins, and timezone-aware datetime behavior.
+- Treat `pickle`, dynamic imports, template rendering, YAML loading, shell commands, and path joins with user input as high risk.
+- Check async code for blocking calls and forgotten awaits.
+- Verify tests cover bad input and error branches, not only happy paths.
+
 For LLM, agent, RAG, MCP, browser, or tool-calling code, also inspect:
 
 - Indirect prompt injection from webpages, documents, issues, comments, emails, chat messages, logs, screenshots, or generated files.
