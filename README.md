@@ -9,6 +9,7 @@ The plugin is built to catch real bugs without making CodeRabbit the default pat
 - `codex-review`: review local changes, branch diffs, or PRs.
 - `codex-review-fixes`: verify and fix human, Codex, CodeRabbit, or GitHub review feedback.
 - `collect_review_context.sh`: small helper that prints git status, branch, base, diff stat, and changed files.
+- Bounded fix loops: verify the claim, fix the cause, rerun focused checks, then stop and report if evidence stops improving.
 
 ## Install As A Local Marketplace
 
@@ -44,3 +45,5 @@ Reviewer comments are treated as claims, not commands. The fix workflow re-reads
 ## Source Notes
 
 This plugin was written from scratch. Public prompt collections and review-tool docs informed the workflow shape, especially single-comment PR reviews, blocker vs follow-up separation, and consolidated fix prompts. The plugin does not copy leaked prompt text.
+
+The repo at `x1xhlol/system-prompts-and-models-of-ai-tools` is GPL-3.0, so it is treated as research only. The practical lessons incorporated here are generic workflow ideas: use multiple searches, inspect history, verify with focused checks, and avoid endless repair loops.

@@ -18,6 +18,7 @@ This skill borrows workflow ideas from public review prompts and review-product 
 - Skip uncertain findings. A weak suspicion is worse than silence.
 - Every finding needs a file and line, a failure path, and the smallest useful fix.
 - Only blocking bugs should block a merge. Style and cleanup go to follow-up work.
+- Prefer a few high-signal checks over a long ritual. The review should find defects, not perform ceremony.
 
 ## Scope
 
@@ -62,6 +63,23 @@ Read these before judging:
 
 Use `rg` for symbol lookup and project-wide checks.
 
+## Search Matrix
+
+Run more than one kind of search before making a cross-file claim. First-pass search misses too much.
+
+- Search changed symbols by exact name.
+- Search older names, aliases, route paths, event names, feature flags, and env vars touched by the diff.
+- Search for tests and fixtures that mention the same behavior.
+- Search recent commits when the diff changes behavior that looks intentional:
+
+```bash
+git log --oneline -n 20 -- <path>
+git blame -L <start>,<end> -- <path>
+git show <commit> -- <path>
+```
+
+Use history to understand why code exists. Do not treat old code as correct just because it survived.
+
 ## Risk Triage
 
 Start with high-impact paths:
@@ -84,6 +102,14 @@ Then inspect tests:
 - Edge cases are covered for auth, validation, errors, empty state, retries, and migrations.
 - Existing tests still exercise the changed path.
 
+Edge cases worth checking in most reviews:
+
+- Empty, null, missing, malformed, and very large inputs.
+- Auth, permission, tenant, and ownership boundaries.
+- Slow network, timeout, retry, cancellation, and duplicate delivery.
+- Concurrency, stale cache, idempotency, and out-of-order events.
+- Mobile, browser, SSR, locale, timezone, and platform-specific branches when relevant.
+
 ## Tool Routing
 
 Run tools when they fit the diff:
@@ -95,6 +121,18 @@ Run tools when they fit the diff:
 - Use domain skills for framework-specific review: Workers, Durable Objects, SwiftUI, React/Next, Terraform, web performance, LLM security, OWASP.
 
 Do not block a normal review on a heavy scanner unless the request is security-focused or the diff risk calls for it. If a tool is unavailable, say so and continue manually.
+
+## Quality Gates
+
+Choose the smallest checks that prove the reviewed path still works.
+
+- Prefer targeted tests over the whole suite when a focused command exists.
+- Run typecheck or lint when the diff touches shared types, generated clients, public APIs, config, or build wiring.
+- For service behavior, prefer a small automated test or script over a manual shell probe.
+- If local setup is broken, report the blocker and continue with static review. Do not invent passing status.
+- Retry a flaky check once or twice with a short pause. If it still fails, report it as unstable with the exact failing command.
+
+Review output should name checks as `PASS`, `FAIL`, `SKIPPED`, or `NOT RUN`.
 
 ## Severity
 
@@ -164,6 +202,8 @@ When asked to fix findings:
 5. Run targeted tests or type checks.
 6. Re-review the changed area.
 7. Stop after two review/fix loops unless the user asks to keep going.
+
+If the same check fails three times after targeted fixes, stop changing code and explain the likely root cause, the evidence, and the next smallest diagnostic step.
 
 ## Output
 
