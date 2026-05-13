@@ -1,9 +1,9 @@
 ---
-name: codex-review-fixes
+name: epic-code-review-fixes
 description: "Review and fix CodeRabbit, Codex, GitHub, or human PR feedback. Use when asked to address review comments, fix reviewer findings, process unresolved PR threads, or keep fixing until review feedback is resolved."
 ---
 
-# Codex Review Fixes
+# Epic Code Review Fixes
 
 Use this when the input is review feedback rather than a fresh review request.
 

@@ -1,14 +1,14 @@
 {
-  "name": "hongkongkiwi-codex-reviewer",
+  "name": "hongkongkiwi-epic-code-reviewer-plugin",
   "interface": {
     "displayName": "HongKongKiwi Codex Plugins"
   },
   "plugins": [
     {
-      "name": "codex-reviewer",
+      "name": "epic-code-reviewer",
       "source": {
         "source": "local",
-        "path": "./plugins/codex-reviewer"
+        "path": "./plugins/epic-code-reviewer"
       },
       "policy": {
         "installation": "AVAILABLE",

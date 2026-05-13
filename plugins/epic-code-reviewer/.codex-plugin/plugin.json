@@ -1,13 +1,13 @@
 {
-  "name": "codex-reviewer",
+  "name": "epic-code-reviewer",
   "version": "0.1.0",
   "description": "Local-first code review workflows for PRs, diffs, and review-fix loops.",
   "author": {
     "name": "Andy",
     "url": "https://github.com/hongkongkiwi"
   },
-  "homepage": "https://github.com/hongkongkiwi/codex-reviewer",
-  "repository": "https://github.com/hongkongkiwi/codex-reviewer",
+  "homepage": "https://github.com/hongkongkiwi/epic-code-reviewer-plugin",
+  "repository": "https://github.com/hongkongkiwi/epic-code-reviewer-plugin",
   "license": "MIT",
   "keywords": [
     "code-review",
@@ -17,9 +17,9 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Codex Reviewer",
+    "displayName": "Epic Code Reviewer",
     "shortDescription": "Local PR and diff review without CodeRabbit as a dependency",
-    "longDescription": "Codex Reviewer provides local-first code review workflows for changed code, pull requests, security-sensitive diffs, and follow-up fix loops. It routes to Semgrep, CodeQL, domain skills, and GitHub PR context when useful, while keeping findings grounded in files, lines, and reproducible failure paths.",
+    "longDescription": "Epic Code Reviewer provides local-first code review workflows for changed code, pull requests, security-sensitive diffs, and follow-up fix loops. It routes to Semgrep, CodeQL, domain skills, and GitHub PR context when useful, while keeping findings grounded in files, lines, and reproducible failure paths.",
     "developerName": "Andy",
     "category": "Coding",
     "capabilities": [

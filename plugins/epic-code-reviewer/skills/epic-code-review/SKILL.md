@@ -1,9 +1,9 @@
 ---
-name: codex-review
+name: epic-code-review
 description: "Local-first CodeRabbit-style review for changed code, pull requests, and branch diffs. Use when asked to review code, review a PR, find bugs, check security risk, or decide whether changes are safe to merge."
 ---
 
-# Codex Review
+# Epic Code Review
 
 Review changed code like a senior reviewer who has to live with the merge.
 

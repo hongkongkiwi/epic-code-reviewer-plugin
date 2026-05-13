@@ -1,13 +1,13 @@
-# Codex Reviewer
+# Epic Code Reviewer
 
-Local-first Codex review workflows for PRs, diffs, and reviewer-fix loops.
+Local-first code review workflows for PRs, diffs, and reviewer-fix loops.
 
 The plugin is built to catch real bugs without making CodeRabbit the default path. It reviews changed code, routes to security and framework-specific tools when useful, and keeps findings tied to files, lines, and reproducible failure paths.
 
 ## What It Adds
 
-- `codex-review`: review local changes, branch diffs, or PRs.
-- `codex-review-fixes`: verify and fix human, Codex, CodeRabbit, or GitHub review feedback.
+- `epic-code-review`: review local changes, branch diffs, or PRs.
+- `epic-code-review-fixes`: verify and fix human, Codex, CodeRabbit, or GitHub review feedback.
 - `collect_review_context.sh`: small helper that prints git status, branch, base, diff stat, and changed files.
 - `validate_plugin.sh`: local checks for plugin metadata, skill frontmatter, examples, and script syntax.
 - Bounded fix loops: verify the claim, fix the cause, rerun focused checks, then stop and report if evidence stops improving.
@@ -17,11 +17,11 @@ The plugin is built to catch real bugs without making CodeRabbit the default pat
 Add the repo as a local marketplace in `~/.codex/config.toml`:
 
 ```toml
-[marketplaces.hongkongkiwi-codex-reviewer]
+[marketplaces.hongkongkiwi-epic-code-reviewer-plugin]
 source_type = "local"
-source = "/Users/andy/Development/hongkongkiwi/codex-reviewer"
+source = "/Users/andy/Development/hongkongkiwi/epic-code-reviewer-plugin"
 
-[plugins."codex-reviewer@hongkongkiwi-codex-reviewer"]
+[plugins."epic-code-reviewer@hongkongkiwi-epic-code-reviewer-plugin"]
 enabled = true
 ```
 
@@ -31,11 +31,11 @@ Restart Codex after changing plugin config.
 
 ```text
 .agents/plugins/marketplace.json
-plugins/codex-reviewer/.codex-plugin/plugin.json
-plugins/codex-reviewer/skills/codex-review/SKILL.md
-plugins/codex-reviewer/skills/codex-review-fixes/SKILL.md
-plugins/codex-reviewer/scripts/collect_review_context.sh
-plugins/codex-reviewer/scripts/validate_plugin.sh
+plugins/epic-code-reviewer/.codex-plugin/plugin.json
+plugins/epic-code-reviewer/skills/epic-code-review/SKILL.md
+plugins/epic-code-reviewer/skills/epic-code-review-fixes/SKILL.md
+plugins/epic-code-reviewer/scripts/collect_review_context.sh
+plugins/epic-code-reviewer/scripts/validate_plugin.sh
 examples/
 ```
 
@@ -44,7 +44,7 @@ examples/
 Run the plugin checks before publishing changes:
 
 ```bash
-plugins/codex-reviewer/scripts/validate_plugin.sh
+plugins/epic-code-reviewer/scripts/validate_plugin.sh
 ```
 
 The examples in `examples/` are small review fixtures. They keep the reviewer prompt honest by showing the kind of diff evidence and output shape the plugin expects.
