@@ -103,6 +103,8 @@ The validator checks:
 - Fixture presence.
 - Copied-prompt marker guard.
 
+The same check runs in GitHub Actions on pushes and pull requests.
+
 ## Repo Layout
 
 ```text

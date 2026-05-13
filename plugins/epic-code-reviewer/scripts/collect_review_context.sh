@@ -17,7 +17,30 @@ git branch --show-current
 
 if [[ -z "$base" ]]; then
   base="$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || true)"
+  if [[ -z "$base" ]] && git rev-parse --verify origin/main >/dev/null 2>&1; then
+    base="origin/main"
+  fi
 fi
+
+echo
+echo "## Unstaged diff stat"
+git diff --stat
+
+echo
+echo "## Unstaged changed files"
+git diff --name-only
+
+echo
+echo "## Staged diff stat"
+git diff --cached --stat
+
+echo
+echo "## Staged changed files"
+git diff --cached --name-only
+
+echo
+echo "## Untracked files"
+git ls-files --others --exclude-standard
 
 if [[ -n "$base" ]]; then
   echo
@@ -25,18 +48,14 @@ if [[ -n "$base" ]]; then
   echo "$base"
 
   echo
-  echo "## Diff stat"
+  echo "## Branch diff stat"
   git diff --stat "$base"...HEAD || git diff --stat "$base"..HEAD
 
   echo
-  echo "## Changed files"
+  echo "## Branch changed files"
   git diff --name-only "$base"...HEAD || git diff --name-only "$base"..HEAD
 else
   echo
-  echo "## Diff stat"
-  git diff --stat
-
-  echo
-  echo "## Changed files"
-  git diff --name-only
+  echo "## Base"
+  echo "No base branch detected."
 fi
