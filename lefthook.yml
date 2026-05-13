@@ -1,0 +1,7 @@
+pre-commit:
+  parallel: true
+  commands:
+    validate-plugin:
+      run: plugins/epic-code-reviewer/scripts/validate_plugin.sh
+    diff-check:
+      run: git diff --cached --check

@@ -36,7 +36,10 @@ git diff
 For branch review:
 
 ```bash
-base="$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo origin/main)"
+base="$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || true)"
+if [[ -z "$base" ]]; then
+  base="origin/main"
+fi
 git diff --stat "$base"...HEAD
 git diff --name-only "$base"...HEAD
 git diff "$base"...HEAD

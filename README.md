@@ -100,8 +100,15 @@ The validator checks:
 - Shell script syntax.
 - Skill frontmatter.
 - Required review sections and safety rules.
-- Fixture presence.
-- Copied-prompt marker guard.
+- Fixture presence and expected fixture content.
+- Copied-prompt marker guard across shipped plugin files, docs, README, and examples.
+
+Install Lefthook if you want the same check before each commit:
+
+```bash
+brew install lefthook
+lefthook install
+```
 
 GitHub Actions runs the same check on pushes and pull requests. Tag pushes also verify that `plugin.json` matches the release tag.
 
@@ -114,6 +121,7 @@ plugins/epic-code-reviewer/skills/epic-code-review/SKILL.md
 plugins/epic-code-reviewer/skills/epic-code-review-fixes/SKILL.md
 plugins/epic-code-reviewer/scripts/collect_review_context.sh
 plugins/epic-code-reviewer/scripts/validate_plugin.sh
+lefthook.yml
 docs/system-prompt-research-notes.md
 examples/auth-regression.diff
 examples/llm-indirect-injection.diff
