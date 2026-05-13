@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.3
+
+- Added fixtures for dependency update risk, GitHub Actions secret exposure, TypeScript missing `await`, and Python unsafe YAML loading.
+- Added expected review outputs for the new fixture batch.
+- Updated the fixture catalog with the new cases.
+
 ## 0.2.2
 
 - Added ShellCheck and actionlint validation in CI, Lefthook, and the local validator.

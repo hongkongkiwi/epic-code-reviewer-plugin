@@ -1,0 +1,9 @@
+diff --git a/tools/load_config.py b/tools/load_config.py
+index 1111111..2222222 100644
+--- a/tools/load_config.py
++++ b/tools/load_config.py
+@@ -4,4 +4,4 @@ import yaml
+ def load_config(path: str) -> dict:
+     with open(path, "r", encoding="utf-8") as handle:
+-        return yaml.safe_load(handle)
++        return yaml.load(handle, Loader=yaml.Loader)

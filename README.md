@@ -141,10 +141,18 @@ examples/auth-regression.diff
 examples/llm-indirect-injection.diff
 examples/shell-readonly-bypass.diff
 examples/stale-review-thread.md
+examples/dependency-update-risk.diff
+examples/github-actions-secret-leak.diff
+examples/typescript-missing-await.diff
+examples/python-unsafe-yaml.diff
 examples/expected/auth-regression.md
 examples/expected/llm-indirect-injection.md
 examples/expected/shell-readonly-bypass.md
 examples/expected/stale-review-thread.md
+examples/expected/dependency-update-risk.md
+examples/expected/github-actions-secret-leak.md
+examples/expected/typescript-missing-await.md
+examples/expected/python-unsafe-yaml.md
 ```
 
 The examples are small review fixtures. Each one encodes a failure mode the reviewer should catch or classify correctly.

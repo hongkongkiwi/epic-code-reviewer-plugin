@@ -1,0 +1,11 @@
+diff --git a/src/routes/signup.ts b/src/routes/signup.ts
+index 1111111..2222222 100644
+--- a/src/routes/signup.ts
++++ b/src/routes/signup.ts
+@@ -15,6 +15,6 @@ export async function signup(req, res) {
+   const user = await users.create(req.body);
+-  await sendWelcomeEmail(user.email);
++  sendWelcomeEmail(user.email);
+   await auditLog.record("signup", user.id);
+   return res.status(201).json({ id: user.id });
+ }

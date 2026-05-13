@@ -57,5 +57,65 @@
       "should not request a code change",
       "requireAccountEditor"
     ]
+  },
+  {
+    "name": "dependency-update-risk",
+    "source": "examples/dependency-update-risk.diff",
+    "expected": "examples/expected/dependency-update-risk.md",
+    "source_contains": [
+      "\"jsonwebtoken\": \"^9.0.0\"",
+      "\"jsonwebtoken\": \"^8.5.1\""
+    ],
+    "expected_contains": [
+      "classification: finding",
+      "severity: P2",
+      "downgrades",
+      "security patch"
+    ]
+  },
+  {
+    "name": "github-actions-secret-leak",
+    "source": "examples/github-actions-secret-leak.diff",
+    "expected": "examples/expected/github-actions-secret-leak.md",
+    "source_contains": [
+      "pull_request_target",
+      "echo \"${{ secrets.NPM_TOKEN }}\""
+    ],
+    "expected_contains": [
+      "classification: finding",
+      "severity: P1",
+      "pull_request_target",
+      "secret"
+    ]
+  },
+  {
+    "name": "typescript-missing-await",
+    "source": "examples/typescript-missing-await.diff",
+    "expected": "examples/expected/typescript-missing-await.md",
+    "source_contains": [
+      "sendWelcomeEmail(user.email)",
+      "await auditLog.record"
+    ],
+    "expected_contains": [
+      "classification: finding",
+      "severity: P2",
+      "missing `await`",
+      "email failure"
+    ]
+  },
+  {
+    "name": "python-unsafe-yaml",
+    "source": "examples/python-unsafe-yaml.diff",
+    "expected": "examples/expected/python-unsafe-yaml.md",
+    "source_contains": [
+      "yaml.load",
+      "yaml.safe_load"
+    ],
+    "expected_contains": [
+      "classification: finding",
+      "severity: P1",
+      "unsafe YAML",
+      "safe_load"
+    ]
   }
 ]
