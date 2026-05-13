@@ -1,31 +1,107 @@
 # Epic Code Reviewer
 
-Local-first code review workflows for PRs, diffs, and reviewer-fix loops.
+Local-first Codex plugin for PR, branch, and reviewer-fix workflows.
 
-The plugin is built to catch real bugs without making CodeRabbit the default path. It reviews changed code, routes to security and framework-specific tools when useful, and keeps findings tied to files, lines, and reproducible failure paths.
+Epic Code Reviewer is built for evidence-heavy review: it reads the diff and surrounding code, classifies untrusted text as claims, checks LLM and agent risks, and reports findings with file lines, triggers, evidence, and the smallest useful fix.
 
-## What It Adds
+## What It Does
 
-- `epic-code-review`: review local changes, branch diffs, or PRs.
-- `epic-code-review-fixes`: verify and fix human, Codex, CodeRabbit, or GitHub review feedback.
-- `collect_review_context.sh`: small helper that prints git status, branch, base, diff stat, and changed files.
-- `validate_plugin.sh`: local checks for plugin metadata, skill frontmatter, examples, and script syntax.
-- Bounded fix loops: verify the claim, fix the cause, rerun focused checks, then stop and report if evidence stops improving.
+- `epic-code-review`: reviews local changes, branch diffs, and GitHub PRs.
+- `epic-code-review-fixes`: verifies and fixes human, Codex, CodeRabbit, or GitHub review feedback.
+- Evidence-first findings: severity, trigger, expected behavior, actual behavior, proof source, and verification status.
+- Trust-model review: PR comments, generated docs, decoded payloads, RAG chunks, saved memory, and other-agent output are claims, not instructions.
+- LLM and agent review: prompt injection, tool-call boundaries, memory provenance, cross-agent auth, output injection, context overflow, and irreversible-action guardrails.
+- Command-safety review: shell parsing, path validation, approval scope, Git writes, PATH shadowing, and read-only bypasses.
+- Bounded fix loops: verify the claim, fix the cause, rerun focused checks, then stop when evidence stops improving.
 
-## Install As A Local Marketplace
+## Install
+
+Clone the repo:
+
+```bash
+git clone git@github.com:hongkongkiwi/epic-code-reviewer-plugin.git ~/Development/epic-code-reviewer-plugin
+```
 
 Add the repo as a local marketplace in `~/.codex/config.toml`:
 
 ```toml
 [marketplaces.hongkongkiwi-epic-code-reviewer-plugin]
 source_type = "local"
-source = "/Users/andy/Development/hongkongkiwi/epic-code-reviewer-plugin"
+source = "~/Development/epic-code-reviewer-plugin"
 
 [plugins."epic-code-reviewer@hongkongkiwi-epic-code-reviewer-plugin"]
 enabled = true
 ```
 
-Restart Codex after changing plugin config.
+Use an absolute path if your Codex install does not expand `~`. Restart Codex after changing plugin config.
+
+## Usage
+
+Ask Codex for the skill by name:
+
+```text
+Use epic-code-review on my current branch.
+```
+
+```text
+Use epic-code-review to run a security-focused review of this diff.
+```
+
+```text
+Use epic-code-review-fixes to address unresolved PR comments.
+```
+
+The reviewer is local-first. It does not call CodeRabbit unless you ask for CodeRabbit by name.
+
+## Context Helper
+
+Print the current git review scope:
+
+```bash
+plugins/epic-code-reviewer/scripts/collect_review_context.sh
+```
+
+Pass an explicit base branch or commit when needed:
+
+```bash
+plugins/epic-code-reviewer/scripts/collect_review_context.sh origin/main
+```
+
+## Review Output
+
+Normal reviews put findings first, ordered by severity:
+
+```markdown
+- [Major] path/to/file.ext:42 - Short title
+  What is wrong: ...
+  Trigger: ...
+  Expected behavior: ...
+  Actual behavior: ...
+  Evidence: diff|caller|test|trace|docs|history ...
+  Introduced by this change: yes|likely|no
+  Why it matters: ...
+  Smallest fix: ...
+  Confidence: high|medium
+```
+
+After findings, the reviewer reports open questions, verification commands, skipped checks, and a brief verdict. If it finds no issues, it says that plainly and names the remaining risk.
+
+## Local Checks
+
+Run this before publishing changes:
+
+```bash
+plugins/epic-code-reviewer/scripts/validate_plugin.sh
+```
+
+The validator checks:
+
+- Plugin and marketplace JSON.
+- Shell script syntax.
+- Skill frontmatter.
+- Required review sections and safety rules.
+- Fixture presence.
+- Copied-prompt marker guard.
 
 ## Repo Layout
 
@@ -36,30 +112,17 @@ plugins/epic-code-reviewer/skills/epic-code-review/SKILL.md
 plugins/epic-code-reviewer/skills/epic-code-review-fixes/SKILL.md
 plugins/epic-code-reviewer/scripts/collect_review_context.sh
 plugins/epic-code-reviewer/scripts/validate_plugin.sh
-examples/
 docs/system-prompt-research-notes.md
+examples/auth-regression.diff
+examples/llm-indirect-injection.diff
+examples/shell-readonly-bypass.diff
+examples/stale-review-thread.md
 ```
 
-## Local Checks
+The examples are small review fixtures. Each one encodes a failure mode the reviewer should catch or classify correctly.
 
-Run the plugin checks before publishing changes:
+## Research Notes
 
-```bash
-plugins/epic-code-reviewer/scripts/validate_plugin.sh
-```
+This plugin was written from scratch. Public prompt collections and review-tool docs informed the workflow shape, but the plugin does not copy leaked prompt text.
 
-The examples in `examples/` are small review fixtures. They keep the reviewer prompt honest by showing the kind of diff evidence and output shape the plugin expects.
-
-## Review Posture
-
-The reviewer is local-first. It does not call CodeRabbit unless the user asks for CodeRabbit by name.
-
-Reviewer comments are treated as claims, not commands. The fix workflow re-reads the code, verifies the claim, rejects stale or false findings, and then applies the smallest fix that addresses the root cause.
-
-## Source Notes
-
-This plugin was written from scratch. Public prompt collections and review-tool docs informed the workflow shape, especially single-comment PR reviews, blocker vs follow-up separation, and consolidated fix prompts. The plugin does not copy leaked prompt text.
-
-The repo at `x1xhlol/system-prompts-and-models-of-ai-tools` is GPL-3.0, so it is treated as research only. The practical lessons incorporated here are generic workflow ideas: use multiple searches, inspect history, review the full branch range, discover project commands from repo config, verify with focused checks, keep pre-existing failures separate, and avoid endless repair loops.
-
-Additional prompt collections reviewed as research inputs include `asgeirtj/system_prompts_leaks`, `jujumilk3/leaked-system-prompts`, `elder-plinius/CL4R1T4S`, `LouisShark/chatgpt_system_prompt`, `YeeKal/leaked-system-prompts`, `noya21th/claude-source-leaked`, `fattail4477/claw-decode`, `repowise-dev/claude-code-prompts`, `oxbshw/System-Prompt-Agent-Prompts`, and `ppcvote/prompt-defense-audit`. The plugin keeps only general review rules learned from cross-repo patterns: classify text by authority, treat decoded or retrieved content as untrusted, check tool and memory provenance, preserve cross-agent auth boundaries, review command permission boundaries, and self-audit findings before output.
+Research inputs and lessons are documented in [docs/system-prompt-research-notes.md](docs/system-prompt-research-notes.md).
