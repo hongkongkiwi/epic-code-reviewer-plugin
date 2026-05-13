@@ -9,6 +9,7 @@ The plugin is built to catch real bugs without making CodeRabbit the default pat
 - `codex-review`: review local changes, branch diffs, or PRs.
 - `codex-review-fixes`: verify and fix human, Codex, CodeRabbit, or GitHub review feedback.
 - `collect_review_context.sh`: small helper that prints git status, branch, base, diff stat, and changed files.
+- `validate_plugin.sh`: local checks for plugin metadata, skill frontmatter, examples, and script syntax.
 - Bounded fix loops: verify the claim, fix the cause, rerun focused checks, then stop and report if evidence stops improving.
 
 ## Install As A Local Marketplace
@@ -34,7 +35,19 @@ plugins/codex-reviewer/.codex-plugin/plugin.json
 plugins/codex-reviewer/skills/codex-review/SKILL.md
 plugins/codex-reviewer/skills/codex-review-fixes/SKILL.md
 plugins/codex-reviewer/scripts/collect_review_context.sh
+plugins/codex-reviewer/scripts/validate_plugin.sh
+examples/
 ```
+
+## Local Checks
+
+Run the plugin checks before publishing changes:
+
+```bash
+plugins/codex-reviewer/scripts/validate_plugin.sh
+```
+
+The examples in `examples/` are small review fixtures. They keep the reviewer prompt honest by showing the kind of diff evidence and output shape the plugin expects.
 
 ## Review Posture
 

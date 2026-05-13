@@ -66,7 +66,7 @@ If the GitHub plugin's `gh-address-comments` skill is available, prefer it for t
 ## Workflow
 
 1. List actionable comments.
-2. Mark each as `valid`, `false positive`, `needs clarification`, or `reply only`.
+2. Mark each as `valid`, `false positive`, `outdated`, `duplicate`, `needs clarification`, or `reply only`.
 3. Fix valid blocking issues first.
 4. Run targeted checks after each behavior area.
 5. Re-read the fixed diff.
@@ -88,6 +88,7 @@ For each comment, ask:
 
 - Does the cited line still exist?
 - Is the comment outdated by newer commits?
+- Does another comment already cover the same behavior?
 - Can the bad behavior happen with real input or state?
 - Does a test already cover the path?
 - Would the suggested fix break repo conventions or product behavior?

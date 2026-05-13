@@ -36,17 +36,45 @@ git diff
 For branch review:
 
 ```bash
-git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo main
-git diff --stat origin/main...HEAD
-git diff --name-only origin/main...HEAD
-git diff origin/main...HEAD
+base="$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo origin/main)"
+git diff --stat "$base"...HEAD
+git diff --name-only "$base"...HEAD
+git diff "$base"...HEAD
 ```
 
 For a GitHub PR:
 
 ```bash
-gh pr view <pr> --json number,title,body,state,headRefName,baseRefName,files,commits,reviews
+gh pr view <pr> --json number,title,body,state,headRefName,baseRefName,baseRefOid,headRefOid,files,commits,reviews,comments,statusCheckRollup
 gh pr diff <pr>
+```
+
+When unresolved inline comments matter, read review threads too:
+
+```bash
+gh api graphql -f query='
+query($owner:String!, $repo:String!, $number:Int!) {
+  repository(owner:$owner, name:$repo) {
+    pullRequest(number:$number) {
+      reviewThreads(first:100) {
+        nodes {
+          isResolved
+          isOutdated
+          comments(first:20) {
+            nodes {
+              author { login }
+              body
+              path
+              line
+              originalLine
+              diffHunk
+            }
+          }
+        }
+      }
+    }
+  }
+}' -f owner=<owner> -f repo=<repo> -F number=<number>
 ```
 
 For PRs, inspect the full branch range, not just the latest commit or visible hunk. Review all included commits when the merge risk depends on intent, ordering, migrations, or a behavior change spread across files.
@@ -118,10 +146,13 @@ Edge cases worth checking in most reviews:
 
 Run tools when they fit the diff:
 
-- Use `semgrep` for security patterns, secrets, and known bug shapes.
-- Use `codeql` for dataflow-heavy security review when the project and language support it.
-- Use `differential-review` for high-risk security diffs.
+- Use `semgrep` for input handling, auth, web routes, shell/file/URL handling, secrets, and known bug shapes.
+- Use `codeql` when the project language is supported and the diff creates dataflow risk: tainted input to database, shell, filesystem, network, template, redirect, or deserialization sinks.
+- Use `differential-review` for high-risk security diffs, auth boundary changes, tenant isolation, crypto, webhook verification, or audit-driven work.
 - Use `fix-review` when validating remediation against an audit report.
+- Run dependency audit commands when manifest or lock files change.
+- Run generated-file or schema checks when OpenAPI, GraphQL, protobuf, migrations, generated clients, or vendored code change.
+- Use secret scanning when env, config, logging, analytics, test fixture, or deployment files change.
 - Use domain skills for framework-specific review: Workers, Durable Objects, SwiftUI, React/Next, Terraform, web performance, LLM security, OWASP.
 
 Do not block a normal review on a heavy scanner unless the request is security-focused or the diff risk calls for it. If a tool is unavailable, say so and continue manually.
@@ -160,12 +191,16 @@ For each finding:
 - [Severity] path/to/file.ext:line - Short title
   What is wrong: ...
   Trigger: ...
+  Expected behavior: ...
+  Actual behavior: ...
+  Evidence: diff|caller|test|trace|docs|history ...
+  Introduced by this change: yes|likely|no
   Why it matters: ...
   Smallest fix: ...
   Confidence: high|medium
 ```
 
-Keep the trigger concrete. Name the request, input, state, command, or user action that breaks.
+Keep the trigger concrete. Name the request, input, state, command, or user action that breaks. Do not report a finding until the evidence points to the changed code or to a contract the changed code now violates.
 
 ## PR Comment Mode
 

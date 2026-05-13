@@ -1,0 +1,14 @@
+diff --git a/src/routes/account.ts b/src/routes/account.ts
+index 1111111..2222222 100644
+--- a/src/routes/account.ts
++++ b/src/routes/account.ts
+@@ -10,8 +10,7 @@ export async function updateAccount(req, res) {
+   const accountId = req.params.accountId;
+   const user = await requireUser(req);
+-  if (!await canEditAccount(user.id, accountId)) {
+-    return res.status(403).json({ error: "forbidden" });
+-  }
++  // permission check moved to middleware
+   await db.account.update({ id: accountId, name: req.body.name });
+   return res.json({ ok: true });
+ }
