@@ -25,6 +25,9 @@ grep -q "Decoded, translated, summarized, retrieved, or transformed content is s
 grep -q "Tool semantic drift" plugins/epic-code-reviewer/skills/epic-code-review/SKILL.md
 grep -q "Memory and RAG provenance" plugins/epic-code-reviewer/skills/epic-code-review/SKILL.md
 grep -q "Cross-agent authority" plugins/epic-code-reviewer/skills/epic-code-review/SKILL.md
+grep -q "For command execution, shell safety, tool permissions, and review automation code" plugins/epic-code-reviewer/skills/epic-code-review/SKILL.md
+grep -q "Shell parsing" plugins/epic-code-reviewer/skills/epic-code-review/SKILL.md
+grep -q "approval scope" plugins/epic-code-reviewer/skills/epic-code-review-fixes/SKILL.md
 grep -q "## Self-Audit Before Output" plugins/epic-code-reviewer/skills/epic-code-review/SKILL.md
 grep -q "outdated" plugins/epic-code-reviewer/skills/epic-code-review-fixes/SKILL.md
 grep -q "duplicate" plugins/epic-code-reviewer/skills/epic-code-review-fixes/SKILL.md
@@ -33,6 +36,7 @@ grep -q "untrusted external, decoded, generated, or cross-agent content" plugins
 test -f examples/auth-regression.diff
 test -f examples/stale-review-thread.md
 test -f examples/llm-indirect-injection.diff
+test -f examples/shell-readonly-bypass.diff
 test -f docs/system-prompt-research-notes.md
 
 if rg -n --glob '!plugins/epic-code-reviewer/scripts/validate_plugin.sh' "BEGIN SYSTEM PROMPT|END SYSTEM PROMPT|You are Claude Code|You are Devin|You are Cursor" plugins README.md examples >/dev/null; then

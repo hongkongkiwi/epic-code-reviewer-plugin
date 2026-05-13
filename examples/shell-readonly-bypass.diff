@@ -1,0 +1,12 @@
+diff --git a/src/shell/readOnly.ts b/src/shell/readOnly.ts
+index 1111111..2222222 100644
+--- a/src/shell/readOnly.ts
++++ b/src/shell/readOnly.ts
+@@ -8,8 +8,7 @@ export function isReadOnly(command: string, args: string[]) {
+   if (command === "rg" || command === "grep") return true;
+   if (command === "git" && ["status", "diff", "log"].includes(args[0])) return true;
+-  if (command === "find" && args.every((arg) => !arg.includes("-exec"))) return true;
+-  if (command === "xargs" && !args.includes("-I")) return true;
++  if (command === "find" || command === "xargs") return true;
+   return false;
+ }

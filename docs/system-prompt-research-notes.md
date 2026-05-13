@@ -7,9 +7,14 @@ Reviewed public prompt collections:
 - `x1xhlol/system-prompts-and-models-of-ai-tools`
 - `asgeirtj/system_prompts_leaks`
 - `jujumilk3/leaked-system-prompts`
+- `LouisShark/chatgpt_system_prompt`
+- `YeeKal/leaked-system-prompts`
+- `noya21th/claude-source-leaked`
+- `fattail4477/claw-decode`
 - `elder-plinius/CL4R1T4S`
 - `oxbshw/System-Prompt-Agent-Prompts`
 - `ppcvote/prompt-defense-audit`
+- `repowise-dev/claude-code-prompts`
 - PromptBrowser index
 
 These sources were used for pattern study only. The plugin does not copy prompt text.
@@ -32,12 +37,15 @@ Agent and LLM app review needs extra checks:
 - Unicode and parser edge cases.
 - Guardrails for transactions and irreversible actions.
 
+Claude-code-focused repos added another lesson: command and tool permission code deserves a separate review lane. Bugs often hide in shell parsing, `--` handling, output redirection, optional flag arguments, PATH shadowing, path normalization, approval reuse, and commands that look read-only but can execute, write, or make network calls.
+
 ## Plugin Changes
 
 The `epic-code-review` skill now has:
 
 - A trust model for text sources.
 - LLM, agent, RAG, MCP, browser, and tool-calling review checks.
+- Command execution, shell safety, and tool-permission review checks.
 - Tool routing for LLM security review.
 - A self-audit step before findings are reported.
 
