@@ -49,6 +49,8 @@ gh pr view <pr> --json number,title,body,state,headRefName,baseRefName,files,com
 gh pr diff <pr>
 ```
 
+For PRs, inspect the full branch range, not just the latest commit or visible hunk. Review all included commits when the merge risk depends on intent, ordering, migrations, or a behavior change spread across files.
+
 If the PR has more than 30 changed files or touches unrelated areas, split the read pass by area. Only use subagents when the user explicitly asked for agent delegation or parallel agent work in the current task.
 
 ## Context Pass
@@ -60,6 +62,7 @@ Read these before judging:
 - Callers and callees for changed functions.
 - Tests, fixtures, schemas, generated clients, migrations, and config that constrain the change.
 - CI config if the risk is build, release, or environment behavior.
+- Test, lint, typecheck, and build commands from README files, package config, lockfiles, Makefiles, task runners, CI, and existing test patterns. Do not assume the command name.
 
 Use `rg` for symbol lookup and project-wide checks.
 
@@ -101,6 +104,7 @@ Then inspect tests:
 - Tests assert outcomes rather than mocks.
 - Edge cases are covered for auth, validation, errors, empty state, retries, and migrations.
 - Existing tests still exercise the changed path.
+- Do not rewrite tests just to make a review pass unless the change is about bad tests or intentional behavior moved the contract.
 
 Edge cases worth checking in most reviews:
 
@@ -128,9 +132,12 @@ Choose the smallest checks that prove the reviewed path still works.
 
 - Prefer targeted tests over the whole suite when a focused command exists.
 - Run typecheck or lint when the diff touches shared types, generated clients, public APIs, config, or build wiring.
+- If `.pre-commit-config.yaml` exists, run `pre-commit run --files <changed files>` when practical.
 - For service behavior, prefer a small automated test or script over a manual shell probe.
+- Separate failures caused by the diff from pre-existing failures. Mention unrelated failures, but do not fix them unless the user asks.
 - If local setup is broken, report the blocker and continue with static review. Do not invent passing status.
 - Retry a flaky check once or twice with a short pause. If it still fails, report it as unstable with the exact failing command.
+- Check `git status --short` after fixes or scratch probes and remove temporary files before finishing.
 
 Review output should name checks as `PASS`, `FAIL`, `SKIPPED`, or `NOT RUN`.
 

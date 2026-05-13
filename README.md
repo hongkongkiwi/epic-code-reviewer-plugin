@@ -46,4 +46,4 @@ Reviewer comments are treated as claims, not commands. The fix workflow re-reads
 
 This plugin was written from scratch. Public prompt collections and review-tool docs informed the workflow shape, especially single-comment PR reviews, blocker vs follow-up separation, and consolidated fix prompts. The plugin does not copy leaked prompt text.
 
-The repo at `x1xhlol/system-prompts-and-models-of-ai-tools` is GPL-3.0, so it is treated as research only. The practical lessons incorporated here are generic workflow ideas: use multiple searches, inspect history, verify with focused checks, and avoid endless repair loops.
+The repo at `x1xhlol/system-prompts-and-models-of-ai-tools` is GPL-3.0, so it is treated as research only. The practical lessons incorporated here are generic workflow ideas: use multiple searches, inspect history, review the full branch range, discover project commands from repo config, verify with focused checks, keep pre-existing failures separate, and avoid endless repair loops.
