@@ -103,7 +103,7 @@ The validator checks:
 - Fixture presence.
 - Copied-prompt marker guard.
 
-The same check runs in GitHub Actions on pushes and pull requests.
+GitHub Actions runs the same check on pushes and pull requests. Tag pushes also verify that `plugin.json` matches the release tag.
 
 ## Repo Layout
 

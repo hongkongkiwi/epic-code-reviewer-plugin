@@ -9,6 +9,7 @@ python3 -m json.tool .agents/plugins/marketplace.json >/dev/null
 python3 -m json.tool plugins/epic-code-reviewer/.codex-plugin/plugin.json >/dev/null
 
 bash -n plugins/epic-code-reviewer/scripts/collect_review_context.sh
+bash -n plugins/epic-code-reviewer/scripts/check_release_version.sh
 bash -n plugins/epic-code-reviewer/scripts/validate_plugin.sh
 
 grep -q '"version": "0.2.0"' plugins/epic-code-reviewer/.codex-plugin/plugin.json
@@ -16,6 +17,9 @@ grep -q "## Unstaged diff stat" plugins/epic-code-reviewer/scripts/collect_revie
 grep -q "## Staged diff stat" plugins/epic-code-reviewer/scripts/collect_review_context.sh
 grep -q "## Untracked files" plugins/epic-code-reviewer/scripts/collect_review_context.sh
 test -f .github/workflows/validate.yml
+test -f .github/workflows/release-check.yml
+test -f plugins/epic-code-reviewer/scripts/check_release_version.sh
+test -x plugins/epic-code-reviewer/scripts/check_release_version.sh
 
 for skill in plugins/epic-code-reviewer/skills/*/SKILL.md; do
   head -1 "$skill" | grep -qx -- "---"

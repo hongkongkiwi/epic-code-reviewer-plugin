@@ -1,16 +1,19 @@
-name: validate
+name: release-check
 
 on:
   push:
-  pull_request:
+    tags:
+      - "v*"
 
 permissions:
   contents: read
 
 jobs:
-  plugin:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Validate plugin
         run: plugins/epic-code-reviewer/scripts/validate_plugin.sh
+      - name: Check release version
+        run: plugins/epic-code-reviewer/scripts/check_release_version.sh "$GITHUB_REF_NAME"
