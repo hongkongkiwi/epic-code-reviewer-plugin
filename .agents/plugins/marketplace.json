@@ -1,0 +1,20 @@
+{
+  "name": "hongkongkiwi-codex-reviewer",
+  "interface": {
+    "displayName": "HongKongKiwi Codex Plugins"
+  },
+  "plugins": [
+    {
+      "name": "codex-reviewer",
+      "source": {
+        "source": "local",
+        "path": "./plugins/codex-reviewer"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Coding"
+    }
+  ]
+}

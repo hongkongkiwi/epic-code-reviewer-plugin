@@ -1,0 +1,37 @@
+{
+  "name": "codex-reviewer",
+  "version": "0.1.0",
+  "description": "Local-first code review workflows for PRs, diffs, and review-fix loops.",
+  "author": {
+    "name": "Andy",
+    "url": "https://github.com/hongkongkiwi"
+  },
+  "homepage": "https://github.com/hongkongkiwi",
+  "repository": "https://github.com/hongkongkiwi",
+  "license": "MIT",
+  "keywords": [
+    "code-review",
+    "pull-request",
+    "security",
+    "static-analysis"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Codex Reviewer",
+    "shortDescription": "Local PR and diff review without CodeRabbit as a dependency",
+    "longDescription": "Codex Reviewer provides local-first code review workflows for changed code, pull requests, security-sensitive diffs, and follow-up fix loops. It routes to Semgrep, CodeQL, domain skills, and GitHub PR context when useful, while keeping findings grounded in files, lines, and reproducible failure paths.",
+    "developerName": "Andy",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Review this branch for real bugs",
+      "Review PR feedback and fix valid issues",
+      "Run a security-focused diff review"
+    ],
+    "brandColor": "#24292F"
+  }
+}
