@@ -37,6 +37,7 @@ plugins/epic-code-reviewer/skills/epic-code-review-fixes/SKILL.md
 plugins/epic-code-reviewer/scripts/collect_review_context.sh
 plugins/epic-code-reviewer/scripts/validate_plugin.sh
 examples/
+docs/system-prompt-research-notes.md
 ```
 
 ## Local Checks
@@ -60,3 +61,5 @@ Reviewer comments are treated as claims, not commands. The fix workflow re-reads
 This plugin was written from scratch. Public prompt collections and review-tool docs informed the workflow shape, especially single-comment PR reviews, blocker vs follow-up separation, and consolidated fix prompts. The plugin does not copy leaked prompt text.
 
 The repo at `x1xhlol/system-prompts-and-models-of-ai-tools` is GPL-3.0, so it is treated as research only. The practical lessons incorporated here are generic workflow ideas: use multiple searches, inspect history, review the full branch range, discover project commands from repo config, verify with focused checks, keep pre-existing failures separate, and avoid endless repair loops.
+
+Additional prompt collections reviewed as research inputs include `asgeirtj/system_prompts_leaks`, `jujumilk3/leaked-system-prompts`, `elder-plinius/CL4R1T4S`, `oxbshw/System-Prompt-Agent-Prompts`, and `ppcvote/prompt-defense-audit`. The plugin keeps only general review rules learned from cross-repo patterns: classify text by authority, treat decoded or retrieved content as untrusted, check tool and memory provenance, preserve cross-agent auth boundaries, and self-audit findings before output.
