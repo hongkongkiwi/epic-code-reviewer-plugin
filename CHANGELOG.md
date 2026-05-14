@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.4
+
+- Made changelog validation follow the current plugin version instead of a fixed historical version.
+- Added duplicate and coverage checks for fixture manifest entries.
+- Expanded copied-prompt marker scanning to marketplace and GitHub config files.
+
 ## 0.2.3
 
 - Added fixtures for dependency update risk, GitHub Actions secret exposure, TypeScript missing `await`, and Python unsafe YAML loading.

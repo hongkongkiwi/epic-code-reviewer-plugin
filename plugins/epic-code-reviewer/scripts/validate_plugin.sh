@@ -69,7 +69,16 @@ test -f CHANGELOG.md
 test -f CONTRIBUTING.md
 test -f docs/fixture-catalog.md
 test -f .github/dependabot.yml
-grep -q "## 0.2.2" CHANGELOG.md
+plugin_version="$(
+  python3 - <<'PY'
+import json
+from pathlib import Path
+
+plugin = json.loads(Path("plugins/epic-code-reviewer/.codex-plugin/plugin.json").read_text())
+print(plugin["version"])
+PY
+)"
+grep -q "## $plugin_version" CHANGELOG.md
 grep -q "Release Flow" CONTRIBUTING.md
 grep -q "auth-regression" docs/fixture-catalog.md
 grep -q "github-actions" .github/dependabot.yml
@@ -82,10 +91,23 @@ manifest = json.loads(Path("examples/fixture-manifest.json").read_text())
 if not manifest:
     raise SystemExit("fixture manifest is empty")
 
+names = set()
+sources = set()
+expected_files = set()
 for fixture in manifest:
     name = fixture["name"]
     source = Path(fixture["source"])
     expected = Path(fixture["expected"])
+    if name in names:
+        raise SystemExit(f"duplicate fixture name {name!r}")
+    if source in sources:
+        raise SystemExit(f"{name}: duplicate source fixture {source}")
+    if expected in expected_files:
+        raise SystemExit(f"{name}: duplicate expected output {expected}")
+    names.add(name)
+    sources.add(source)
+    expected_files.add(expected)
+
     if not source.is_file():
         raise SystemExit(f"{name}: missing source fixture {source}")
     if not expected.is_file():
@@ -99,9 +121,25 @@ for fixture in manifest:
     for needle in fixture.get("expected_contains", []):
         if needle not in expected_text:
             raise SystemExit(f"{name}: expected output missing {needle!r}")
+
+root_sources = {
+    path
+    for path in Path("examples").iterdir()
+    if path.is_file() and path.suffix in {".diff", ".md"}
+}
+missing_from_manifest = sorted(root_sources - sources)
+if missing_from_manifest:
+    paths = ", ".join(str(path) for path in missing_from_manifest)
+    raise SystemExit(f"source fixtures missing from manifest: {paths}")
+
+orphan_expected = sorted(Path("examples/expected").glob("*.md"))
+orphan_expected = [path for path in orphan_expected if path not in expected_files]
+if orphan_expected:
+    paths = ", ".join(str(path) for path in orphan_expected)
+    raise SystemExit(f"expected outputs missing from manifest: {paths}")
 PY
 
-if rg -n --glob '!plugins/epic-code-reviewer/scripts/validate_plugin.sh' "BEGIN SYSTEM PROMPT|END SYSTEM PROMPT|You are Claude Code|You are Devin|You are Cursor" plugins docs README.md CHANGELOG.md CONTRIBUTING.md examples >/dev/null; then
+if rg -n --glob '!plugins/epic-code-reviewer/scripts/validate_plugin.sh' "BEGIN SYSTEM PROMPT|END SYSTEM PROMPT|You are Claude Code|You are Devin|You are Cursor" .agents .github plugins docs README.md CHANGELOG.md CONTRIBUTING.md examples >/dev/null; then
   echo "Source guard failed: remove copied prompt markers from shipped files." >&2
   exit 1
 fi
