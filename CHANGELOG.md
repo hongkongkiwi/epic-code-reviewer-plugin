@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.5
+
+- Updated GitHub Actions checkout usage from `v4` to `v6`.
+
 ## 0.2.4
 
 - Made changelog validation follow the current plugin version instead of a fixed historical version.
