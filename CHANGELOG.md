@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.7
+
+- Added marketplace integrity checks so local plugin installation metadata cannot drift from `plugin.json`.
+
 ## 0.2.6
 
 - Added validator checks for workflow wiring and README release-script coverage.

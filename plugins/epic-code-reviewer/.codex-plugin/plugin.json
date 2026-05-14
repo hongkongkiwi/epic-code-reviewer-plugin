@@ -1,6 +1,6 @@
 {
   "name": "epic-code-reviewer",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Local-first code review workflows for PRs, diffs, and review-fix loops.",
   "author": {
     "name": "Andy",

@@ -18,6 +18,29 @@ plugin = json.loads(Path("plugins/epic-code-reviewer/.codex-plugin/plugin.json")
 version = plugin.get("version", "")
 if not re.fullmatch(r"[0-9]+[.][0-9]+[.][0-9]+", version):
     raise SystemExit(f"plugin version must be X.Y.Z, got {version!r}")
+
+marketplace = json.loads(Path(".agents/plugins/marketplace.json").read_text())
+plugins = marketplace.get("plugins", [])
+matches = [entry for entry in plugins if entry.get("name") == plugin.get("name")]
+if len(matches) != 1:
+    raise SystemExit(f"marketplace must contain exactly one entry for {plugin.get('name')!r}")
+
+entry = matches[0]
+source = entry.get("source", {})
+if source.get("source") != "local":
+    raise SystemExit("marketplace plugin source must be local")
+
+plugin_path = Path(source.get("path", ""))
+if plugin_path != Path("./plugins/epic-code-reviewer"):
+    raise SystemExit(f"marketplace plugin path is wrong: {plugin_path}")
+if not (plugin_path / ".codex-plugin/plugin.json").is_file():
+    raise SystemExit(f"marketplace plugin path does not contain plugin metadata: {plugin_path}")
+if not (plugin_path / "skills").is_dir():
+    raise SystemExit(f"marketplace plugin path does not contain skills: {plugin_path}")
+
+policy = entry.get("policy", {})
+if policy.get("installation") != "AVAILABLE":
+    raise SystemExit("marketplace plugin must be available for installation")
 PY
 
 bash -n plugins/epic-code-reviewer/scripts/collect_review_context.sh
