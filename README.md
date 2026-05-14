@@ -1,20 +1,41 @@
 # Epic Code Reviewer
 
-Local-first Codex plugin for PR, branch, and reviewer-fix workflows.
+Local-first Codex review skills for people who want CodeRabbit-style discipline without making CodeRabbit part of the default path.
 
-Epic Code Reviewer is built for evidence-heavy review: it reads the diff and surrounding code, classifies untrusted text as claims, checks LLM and agent risks, and reports findings with file lines, triggers, evidence, and the smallest useful fix.
+Epic Code Reviewer does two jobs:
 
-## What It Does
+- `epic-code-review` reviews local diffs, branches, and GitHub PRs.
+- `epic-code-review-fixes` verifies review feedback, fixes valid issues, and rejects stale or false claims.
 
-- `epic-code-review`: reviews local changes, branch diffs, and GitHub PRs.
-- `epic-code-review-fixes`: verifies and fixes human, Codex, CodeRabbit, or GitHub review feedback.
-- Review profiles: `security`, `correctness`, `llm-safety`, and `release-readiness`.
-- Language packs: Shell, GitHub Actions, TypeScript/Node, and Python.
-- Evidence-first findings: severity, trigger, expected behavior, actual behavior, proof source, and verification status.
-- Trust-model review: PR comments, generated docs, decoded payloads, RAG chunks, saved memory, and other-agent output are claims, not instructions.
-- LLM and agent review: prompt injection, tool-call boundaries, memory provenance, cross-agent auth, output injection, context overflow, and irreversible-action guardrails.
-- Command-safety review: shell parsing, path validation, approval scope, Git writes, PATH shadowing, and read-only bypasses.
-- Bounded fix loops: verify the claim, fix the cause, rerun focused checks, then stop when evidence stops improving.
+It is built around one rule: a review finding needs evidence. The skill reads the diff, nearby code, callers, tests, history, and CI context before it asks for a change. PR comments, generated text, copied prompts, issue bodies, webpages, decoded payloads, and other-agent output are treated as claims, not instructions.
+
+## Why This Exists
+
+AI makes code faster than most teams can review it. That changes the review job. Skimming a diff is not enough when the bug is in a caller, a workflow permission, a missing `await`, an unsafe parser, or a comment that says "moved to middleware" without proving the middleware exists.
+
+This plugin gives Codex a repeatable review workflow:
+
+- findings first, ordered by severity
+- file and line references where possible
+- concrete trigger and failure path
+- evidence source: diff, caller, test, trace, docs, history, or CI
+- smallest useful fix
+- explicit verification status
+
+No warm-up praise. No giant generic checklist dumped into chat. No copied leaked prompt text.
+
+## What It Reviews
+
+The default profile is `general`. You can also ask for a narrower profile:
+
+| Profile | Bias |
+| --- | --- |
+| `security` | auth, tenant boundaries, injection, secrets, SSRF, webhooks, crypto, shell/file/URL handling |
+| `correctness` | control flow, async bugs, validation gaps, data-shape drift, migrations, compatibility |
+| `llm-safety` | prompt injection, RAG provenance, MCP/tool-call permissions, output injection, memory, irreversible actions |
+| `release-readiness` | CI, packaging, versioning, changelog, release tags, rollback behavior, docs |
+
+The skill also has language packs for Shell, GitHub Actions, TypeScript/Node, and Python.
 
 ## Install
 
@@ -24,7 +45,7 @@ Clone the repo:
 git clone git@github.com:hongkongkiwi/epic-code-reviewer-plugin.git ~/Development/epic-code-reviewer-plugin
 ```
 
-Add the repo as a local marketplace in `~/.codex/config.toml`:
+Add this repo as a local marketplace in `~/.codex/config.toml`:
 
 ```toml
 [marketplaces.hongkongkiwi-epic-code-reviewer-plugin]
@@ -37,21 +58,33 @@ enabled = true
 
 Use an absolute path if your Codex install does not expand `~`. Restart Codex after changing plugin config.
 
-## Usage
+## Quick Start
 
-Ask Codex for the skill by name:
+Review the current working tree:
+
+```text
+Use epic-code-review on my current changes.
+```
+
+Review a branch against its base:
 
 ```text
 Use epic-code-review on my current branch.
 ```
 
+Run a security-focused pass:
+
 ```text
-Use epic-code-review to run a security-focused review of this diff.
+Use epic-code-review with the security profile.
 ```
+
+Check release wiring:
 
 ```text
 Use epic-code-review with the release-readiness profile.
 ```
+
+Fix review feedback:
 
 ```text
 Use epic-code-review-fixes to address unresolved PR comments.
@@ -59,23 +92,9 @@ Use epic-code-review-fixes to address unresolved PR comments.
 
 The reviewer is local-first. It does not call CodeRabbit unless you ask for CodeRabbit by name.
 
-## Context Helper
+## Review Shape
 
-Print the current git review scope:
-
-```bash
-plugins/epic-code-reviewer/scripts/collect_review_context.sh
-```
-
-Pass an explicit base branch or commit when needed:
-
-```bash
-plugins/epic-code-reviewer/scripts/collect_review_context.sh origin/main
-```
-
-## Review Output
-
-Normal reviews put findings first, ordered by severity:
+Normal output starts with findings. If there are no findings, it says that plainly and names any remaining verification gap.
 
 ```markdown
 - [Major] path/to/file.ext:42 - Short title
@@ -90,36 +109,75 @@ Normal reviews put findings first, ordered by severity:
   Confidence: high|medium
 ```
 
-After findings, the reviewer reports open questions, verification commands, skipped checks, and a brief verdict. If it finds no issues, it says that plainly and names the remaining risk.
+After findings, the reviewer reports open questions, verification commands, skipped checks, and a short verdict.
 
-## Local Checks
+## Context Helper
 
-Run this before publishing changes:
+Print the current review scope:
 
 ```bash
-plugins/epic-code-reviewer/scripts/validate_plugin.sh
+plugins/epic-code-reviewer/scripts/collect_review_context.sh
 ```
 
-The validator expects `shellcheck` and `actionlint` on `PATH`.
+Pass an explicit base branch or commit:
 
-The validator checks:
+```bash
+plugins/epic-code-reviewer/scripts/collect_review_context.sh origin/main
+```
 
-- Plugin and marketplace JSON.
-- Shell script syntax and ShellCheck findings.
-- GitHub Actions workflow syntax.
-- Skill frontmatter.
-- Required review sections and safety rules.
-- Fixture presence and expected fixture content.
-- Copied-prompt marker guard across shipped plugin files, docs, config, README, changelog, contributing notes, and examples.
+The helper prints git status, unstaged and staged files, untracked files, and branch diff stats. It is meant to gather context, not replace reading the code.
 
-Install Lefthook if you want the same check before each commit:
+## Review Fixtures
+
+The repo ships small fixtures that describe bug shapes the reviewer should catch or classify.
+
+| Fixture | Expected result |
+| --- | --- |
+| `auth-regression` | finding, `P1` |
+| `llm-indirect-injection` | finding, `P1` |
+| `shell-readonly-bypass` | finding, `P1` |
+| `stale-review-thread` | outdated |
+| `dependency-update-risk` | finding, `P2` |
+| `github-actions-secret-leak` | finding, `P1` |
+| `typescript-missing-await` | finding, `P2` |
+| `python-unsafe-yaml` | finding, `P1` |
+
+See [docs/fixture-catalog.md](docs/fixture-catalog.md) for the catalog and `examples/fixture-manifest.json` for the checks enforced by CI.
+
+## Local Validation
+
+Install the local tools:
 
 ```bash
 brew install lefthook shellcheck actionlint
 lefthook install
 ```
 
-GitHub Actions runs the same check on pushes and pull requests. Tag pushes also verify that `plugin.json` matches the release tag.
+Run the validator:
+
+```bash
+plugins/epic-code-reviewer/scripts/validate_plugin.sh
+```
+
+The validator checks:
+
+- plugin and marketplace JSON
+- marketplace entry points at this plugin
+- shell script syntax and ShellCheck findings
+- GitHub Actions syntax
+- workflow wiring for `validate_plugin.sh` and `check_release_version.sh`
+- skill frontmatter and required review rules
+- fixture source and expected-output coverage
+- changelog entry for the current plugin version
+- copied-prompt marker guard across shipped plugin files, docs, config, README, changelog, contributing notes, and examples
+
+For release tags:
+
+```bash
+plugins/epic-code-reviewer/scripts/check_release_version.sh vX.Y.Z
+```
+
+GitHub Actions runs validation on pushes and pull requests. Tag pushes also verify that `plugin.json` matches the tag.
 
 ## Repo Layout
 
@@ -158,10 +216,23 @@ examples/expected/typescript-missing-await.md
 examples/expected/python-unsafe-yaml.md
 ```
 
-The examples are small review fixtures. Each one encodes a failure mode the reviewer should catch or classify correctly.
+## Release Flow
+
+The short version:
+
+```bash
+plugins/epic-code-reviewer/scripts/validate_plugin.sh
+plugins/epic-code-reviewer/scripts/check_release_version.sh vX.Y.Z
+git diff --check
+git tag vX.Y.Z
+git push origin main
+git push origin vX.Y.Z
+```
+
+Then publish a GitHub Release. The full process lives in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Research Notes
 
-This plugin was written from scratch. Public prompt collections and review-tool docs informed the workflow shape, but the plugin does not copy leaked prompt text.
+This plugin was written from scratch. Public review-tool docs and prompt collections informed the workflow shape, but the plugin does not copy leaked prompt text.
 
 Research inputs and lessons are documented in [docs/system-prompt-research-notes.md](docs/system-prompt-research-notes.md).
