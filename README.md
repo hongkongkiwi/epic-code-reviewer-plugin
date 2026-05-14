@@ -110,7 +110,7 @@ The validator checks:
 - Skill frontmatter.
 - Required review sections and safety rules.
 - Fixture presence and expected fixture content.
-- Copied-prompt marker guard across shipped plugin files, docs, README, and examples.
+- Copied-prompt marker guard across shipped plugin files, docs, config, README, changelog, contributing notes, and examples.
 
 Install Lefthook if you want the same check before each commit:
 
@@ -126,11 +126,14 @@ GitHub Actions runs the same check on pushes and pull requests. Tag pushes also 
 ```text
 .agents/plugins/marketplace.json
 .github/dependabot.yml
+.github/workflows/validate.yml
+.github/workflows/release-check.yml
 plugins/epic-code-reviewer/.codex-plugin/plugin.json
 plugins/epic-code-reviewer/skills/epic-code-review/SKILL.md
 plugins/epic-code-reviewer/skills/epic-code-review-fixes/SKILL.md
 plugins/epic-code-reviewer/scripts/collect_review_context.sh
 plugins/epic-code-reviewer/scripts/validate_plugin.sh
+plugins/epic-code-reviewer/scripts/check_release_version.sh
 lefthook.yml
 CHANGELOG.md
 CONTRIBUTING.md

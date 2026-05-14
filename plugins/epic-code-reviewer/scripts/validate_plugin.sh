@@ -33,6 +33,10 @@ test -f .github/workflows/validate.yml
 test -f .github/workflows/release-check.yml
 test -f plugins/epic-code-reviewer/scripts/check_release_version.sh
 test -x plugins/epic-code-reviewer/scripts/check_release_version.sh
+grep -q "actions/checkout@v6" .github/workflows/validate.yml
+grep -q "actions/checkout@v6" .github/workflows/release-check.yml
+grep -q "validate_plugin.sh" .github/workflows/validate.yml
+grep -q "check_release_version.sh" .github/workflows/release-check.yml
 
 for skill in plugins/epic-code-reviewer/skills/*/SKILL.md; do
   head -1 "$skill" | grep -qx -- "---"
@@ -82,6 +86,9 @@ grep -q "## $plugin_version" CHANGELOG.md
 grep -q "Release Flow" CONTRIBUTING.md
 grep -q "auth-regression" docs/fixture-catalog.md
 grep -q "github-actions" .github/dependabot.yml
+grep -q ".github/workflows/validate.yml" README.md
+grep -q "check_release_version.sh" README.md
+grep -q "gh release create" CONTRIBUTING.md
 
 python3 - <<'PY'
 import json

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.6
+
+- Added validator checks for workflow wiring and README release-script coverage.
+- Updated release docs with GitHub Release creation.
+- Fixed README repo layout and copied-prompt guard wording.
+
 ## 0.2.5
 
 - Updated GitHub Actions checkout usage from `v4` to `v6`.

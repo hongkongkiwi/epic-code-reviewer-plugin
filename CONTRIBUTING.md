@@ -41,7 +41,11 @@ git push origin main
 git push origin vX.Y.Z
 ```
 
-The release workflow checks that the tag version matches `plugin.json`.
+The release workflow checks that the tag version matches `plugin.json`. After CI passes, publish the GitHub Release:
+
+```bash
+gh release create vX.Y.Z --title "vX.Y.Z" --notes-file <(sed -n '/^## X.Y.Z$/,/^## /p' CHANGELOG.md | sed '$d')
+```
 
 ## Fixture Changes
 
